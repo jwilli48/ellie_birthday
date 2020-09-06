@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { interval, Subject, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { interval, Subject, Observable, Observer } from 'rxjs';
+import { takeUntil, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -9,9 +9,11 @@ import { takeUntil } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   title = 'ellie';
 
+  constructor(private renderer: Renderer2) {}
+
   playing = false;
   currentImage = 'assets/ellie_josh1.jpg';
-  currentMessage = ['Happy Birthday, Ellie'];
+  currentMessage = ['Happy Birthday, Ellie!'];
 
   imageArray = [
     'assets/airport.jpg',
@@ -22,7 +24,6 @@ export class AppComponent implements OnInit {
     'assets/ellie_gumwall.jpg',
     'assets/ellie_gunther.jpg',
     'assets/ellie_josh2.jpg',
-    'assets/ellie_josh_car.jpg',
     'assets/ellie_josh_goofy.jpg',
     'assets/ellie_josh_gumwall.jpg',
     'assets/ellie_pregnant_gunther.jpg',
@@ -63,34 +64,52 @@ export class AppComponent implements OnInit {
     'assets/turckey_ellie.jpg',
     'assets/wedding.jpg',
     'assets/wedding2.jpg',
-    'assets/wedding_josh_friends_car.jpg',
+    'assets/wedding_josh_friends_car.jpg'
   ];
   currentImageIndex = 1;
 
   endSlideShow = new Subject();
 
   intervalTimer: Observable<number>;
+  finalMessage = false;
+
+  fading = false;
 
   ngOnInit() {
     this.shuffle(this.imageArray);
+
+    const s = this.renderer.createElement('script') as HTMLScriptElement;
+    s.src = 'https://www.youtube.com/iframe_api';
+    this.renderer.appendChild(document.body, s);
+    const s2 = this.renderer.createElement('script') as HTMLScriptElement;
+    s2.src = 'https://cdn.rawgit.com/labnol/files/master/yt.js';
+    this.renderer.appendChild(document.body, s2);
   }
 
   play() {
-    this.playing = true;
-  }
-
-  @HostListener('window:blur', [''])
-  onWindowBlur() {
-    this.playing = true;
-    if (!this.intervalTimer) {
-      this.intervalTimer = interval(3800).pipe(takeUntil(this.endSlideShow));
-      this.intervalTimer.subscribe(() => {
-        this.currentImage = this.imageArray[this.currentImageIndex++];
-        if (this.currentImageIndex >= this.imageArray.length) {
-          this.endSlideShow.next();
-          this.currentMessage = ['I Love You'];
-        }
-      });
+    if (this.playing) {
+      this.playing = false;
+    } else {
+      this.playing = true;
+      if (!this.intervalTimer) {
+        this.intervalTimer = interval(3800).pipe(takeUntil(this.endSlideShow));
+        this.intervalTimer.subscribe(() => {
+          if (this.playing) {
+            this.fading = true;
+            setTimeout(() => {
+              if (this.currentImageIndex < this.imageArray.length) {
+                this.fading = false;
+                this.currentImage = this.imageArray[this.currentImageIndex++];
+              }
+            }, 650);
+          }
+          if (this.currentImageIndex >= this.imageArray.length) {
+            this.endSlideShow.next();
+            this.currentMessage = ['I Love You'];
+            setTimeout(() => { this.fading = false; this.currentImage = 'assets/ellie_josh_car.jpg'; this.finalMessage = true; }, 1500);
+          }
+        });
+      }
     }
   }
 

@@ -5,37 +5,40 @@
     background: #0e1111;
     flex-direction: column;
     overflow: hidden;
-    
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+
     .play {
         background: transparent;
         border: none;
         width: 50px;
         height: 50px;
-        z-index: 1;
-        position: absolute;
-        bottom: 3%;
-    
+        margin-top: 35px;
+
         &:hover {
             cursor: pointer;
         }
     }
 
-    iframe {
-        position: absolute;
-        bottom: -1%;
-        left: 9%;
-        opacity: 0;
-        z-index: 2;
-    }
-
     .images {
         width: 90%;
         flex: 1;
+        max-height: 400px;
+        min-height: 400px;
+        overflow: hidden;
+        border-radius: 40px;
 
         img {
             width: 100%;
             height: auto;
             border-radius: 40px;
+            transition: opacity .6s ease-in;
+
+            &.fading {
+                transition: opacity .6s ease-out;
+                opacity: 0;
+            }
         }
     }
 
