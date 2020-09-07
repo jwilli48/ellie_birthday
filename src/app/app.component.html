@@ -1,11 +1,11 @@
 <div class="container">
-  <div class="message">
+  <div class="message" [@fade]="this.currentMessageIndex >= this.messages.length ? 'fade-in' : fade">
     <p *ngFor="let msg of currentMessage">
       {{msg}}
     </p>
   </div>
   <div class="images"[ngStyle]="finalMessage ? {'max-height': '230px', 'min-height': 'initial'} : {}">
-      <img [src]="currentImage" [class.fading]="fading">
+      <img [src]="currentImage" [@fade]="fade" (@fade.done)="onAnimationDone($event)">
   </div>
   <div class="message" *ngIf="finalMessage">
     <p>
