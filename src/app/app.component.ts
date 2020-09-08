@@ -22,8 +22,8 @@ import {
       state('fade-in', style({
         opacity: 1
       })),
-      transition('fade-in => fade-out', [animate('1s ease-out')]),
-      transition('fade-out => fade-in', [animate('1s ease-in')])
+      transition('fade-in => fade-out', [animate('.8s ease-out')]),
+      transition('fade-out => fade-in', [animate('.8s ease-in')])
     ])
   ]
 })
@@ -151,7 +151,7 @@ export class AppComponent implements OnInit {
         this.currentMessage = [this.messages[this.currentMessageIndex++]];
       }
       this.currentImage = this.imageArray[this.currentImageIndex++];
-      this.fade = 'fade-in';
+      setTimeout(() => this.fade = 'fade-in', 500);
     }
   }
 
